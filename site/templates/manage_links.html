@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}KnowledgeMesh Manage Links{% endblock %}
+{% block content %}
+      <h2>Manage Links</h2>
+      <div id="records"><!-- Records will be rendered here by JavaScript --></div>
+
+    <script>
+      var records = {{ records | tojson }};
+
+      // Object to hold tag arrays per record (keyed by record id)
+      const tagEditors = {};
+
+      // Render records and initialize tag editors
+      function renderRecords(records) {
+        const container = document.getElementById('records');
+        container.innerHTML = ''; // Clear any existing content
+
+        records.forEach(record => {
+          // Create record container
+          const recordDiv = document.createElement('div');
+          recordDiv.className = 'record';
+          recordDiv.setAttribute('data-id', record.id);
+
+          // Display mode (read-only view)
+          const displayMode = document.createElement('div');
+          displayMode.className = 'display-mode';
+          displayMode.innerHTML = `
+            <p><strong>Title:</strong> <span class="title">${record.title}</span></p>
+            <p><strong>Description:</strong> <span class="description">${record.description}</span></p>
+            <p><strong>URL:</strong> <span class="url">${record.url}</span></p>
+            <p><strong>Tags:</strong> <span class="tags">${record.tags.join(', ')}</span></p>
+            <button class="edit-btn" onclick="enterEditMode('${record.id}')">Edit</button>
+            <button class="delete-btn" onclick="deleteRecord('${record.id}')">Delete</button>
+          `;
+          recordDiv.appendChild(displayMode);
+
+          // Edit mode (initially hidden)
+          const editMode = document.createElement('div');
+          editMode.className = 'edit-mode';
+          editMode.style.display = 'none';
+          editMode.innerHTML = `
+            <p>
+              <strong>Title:</strong>
+              <input type="text" class="edit-title" value="${record.title}">
+            </p>
+            <p>
+              <strong>Description:</strong>
+              <textarea class="edit-description">${record.description}</textarea>
+            </p>
+            <p>
+              <strong>URL:</strong>
+              <input type="text" class="edit-url" value="${record.url}">
+            </p>
+            <p>
+              <strong>Tags:</strong>
+              <div class="tag-input-container">
+                <button type="button" class="add-tag-button" data-record-id="${record.id}">+</button>
+                <input type="text" class="tag-input-field" data-record-id="${record.id}" placeholder="Enter a tag">
+              </div>
+              <div class="tags-list" id="tags-list-${record.id}"></div>
+              <input type="hidden" class="edit-tags-hidden" id="edit-tags-${record.id}">
+            </p>
+            <button class="save-btn" onclick="saveRecord('${record.id}')">Save</button>
+            <button class="cancel-btn" onclick="cancelEdit('${record.id}')">Cancel</button>
+          `;
+          recordDiv.appendChild(editMode);
+          container.appendChild(recordDiv);
+
+          // Initialize the tag editor for this record with its existing tags.
+          initTagEditor(record.id, record.tags);
+        });
+      }
+
+
+
+      // Initialize tag editor for a given record id
+      function initTagEditor(recordId, existingTags) {
+        // Clone the initial tags array so we can modify it without affecting the original data.
+        tagEditors[recordId] = existingTags ? [...existingTags] : [];
+        updateTagsDisplay(recordId);
+
+        // Set up the event listener for the add tag button for this record.
+        const addTagButton = document.querySelector(`.add-tag-button[data-record-id="${recordId}"]`);
+        const tagInputField = document.querySelector(`.tag-input-field[data-record-id="${recordId}"]`);
+        addTagButton.addEventListener('click', function() {
+          const tagValue = tagInputField.value.trim();
+          if (tagValue && !tagEditors[recordId].includes(tagValue)) {
+            tagEditors[recordId].push(tagValue);
+            updateTagsDisplay(recordId);
+            tagInputField.value = ''; // Clear input after adding
+          }
+        });
+      }
+
+      // Update the tags display and hidden input for a specific record
+      function updateTagsDisplay(recordId) {
+        const tagsListDiv = document.getElementById(`tags-list-${recordId}`);
+        tagsListDiv.innerHTML = '';
+        tagEditors[recordId].forEach((tag, index) => {
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'tag';
+          tagSpan.textContent = tag;
+          
+          // Delete button for the tag
+          const deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
+          deleteButton.textContent = 'x';
+          deleteButton.addEventListener('click', function() {
+            tagEditors[recordId].splice(index, 1);
+            updateTagsDisplay(recordId);
+          });
+          tagSpan.appendChild(deleteButton);
+          tagsListDiv.appendChild(tagSpan);
+        });
+        // Keep the hidden input updated with the JSON string of tags.
+        document.getElementById(`edit-tags-${recordId}`).value = JSON.stringify(tagEditors[recordId]);
+      }
+
+      // Switch to edit mode for a record.
+      function enterEditMode(id) {
+        const recordDiv = document.querySelector(`.record[data-id="${id}"]`);
+        if (recordDiv) {
+          recordDiv.querySelector('.display-mode').style.display = 'none';
+          recordDiv.querySelector('.edit-mode').style.display = 'block';
+        }
+      }
+
+      // Cancel editing and revert to display mode.
+      function cancelEdit(id) {
+        const recordDiv = document.querySelector(`.record[data-id="${id}"]`);
+        if (recordDiv) {
+          // Retrieve the original tags from the display mode.
+          const originalTagsText = recordDiv.querySelector('.display-mode .tags').textContent;
+          const originalTags = originalTagsText.split(',').map(tag => tag.trim()).filter(tag => tag);
+    
+          // Reset the tag editor state for this record.
+          tagEditors[id] = [...originalTags];
+          updateTagsDisplay(id);
+
+          recordDiv.querySelector('.edit-mode').style.display = 'none';
+          recordDiv.querySelector('.display-mode').style.display = 'block';
+        }
+      }
+
+      // Save the updated record by sending the changes to the server.
+      function saveRecord(id) {
+        const recordDiv = document.querySelector(`.record[data-id="${id}"]`);
+        if (recordDiv) {
+          const title = recordDiv.querySelector('.edit-title').value;
+          const description = recordDiv.querySelector('.edit-description').value;
+          const url = recordDiv.querySelector('.edit-url').value;
+          const tags = document.getElementById(`edit-tags-${id}`).value;
+
+          fetch('/update_record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, title, description, url, tags })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Update the display mode with the new data.
+              recordDiv.querySelector('.title').textContent = title;
+              recordDiv.querySelector('.description').textContent = description;
+              recordDiv.querySelector('.url').textContent = url;
+              recordDiv.querySelector('.tags').textContent = JSON.parse(tags).join(', ');
+              cancelEdit(id);
+            } else {
+              alert("Error saving record.");
+            }
+          })
+          .catch(error => console.error("Error saving record:", error));
+        }
+      }
+
+      // Delete a record by sending a delete request to the server.
+      function deleteRecord(id) {
+        if (confirm("Are you sure you want to delete this record?")) {
+          fetch('/delete_record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const recordDiv = document.querySelector(`.record[data-id="${id}"]`);
+              if (recordDiv) recordDiv.remove();
+            } else {
+              alert("Error deleting record.");
+            }
+          })
+          .catch(error => console.error("Error deleting record:", error));
+        }
+      }
+
+      // When the document is loaded, fetch the records.
+      document.addEventListener('DOMContentLoaded', function() {
+        renderRecords(records);
+      });
+    </script>
+{% endblock %}

@@ -1,0 +1,93 @@
+
+    {% extends "base.html" %}
+    {% block title %}KnowledgeMesh Create New Link{% endblock %}
+    {% block content %}
+    <h2>Create a New Link</h2>
+    <form method="POST" id="new-link-form">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" required>
+        <br><br>
+        
+        <label for="url">URL:</label>
+        <input type="url" name="url" id="url" required>
+        <br><br>
+        
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required></textarea>
+        <br><br>
+        <div class="tag-input-container">
+            <button type="button" id="add-tag-button">+</button>
+            <input type="text" id="tag-input-field" placeholder="Enter a tag or phrase">
+        </div>
+        <div id="tags-list"></div>
+        <!-- Hidden field that will hold the JSON array of tags -->
+        <input type="hidden" name="tags" id="tags-hidden">
+        
+        <br>
+        <button type="submit">Create Link</button>
+    </form>
+    <br>
+    <a href="{{ url_for('index') }}">Back to Homepage</a>
+    <script>
+        // Array to store completed tags
+        let tags = [];
+
+        // Event listener for the plus button to add tags
+        document.getElementById('add-tag-button').addEventListener('click', function() {
+            const tagInput = document.getElementById('tag-input-field');
+            const tagValue = tagInput.value.trim();
+            if (tagValue !== '' && !tags.includes(tagValue)) {
+                tags.push(tagValue);
+                updateTagsDisplay();
+                tagInput.value = ''; // Clear input after adding
+            }
+        });
+
+        // Function to update the display of tags
+        function updateTagsDisplay() {
+            const tagsList = document.getElementById('tags-list');
+            tagsList.innerHTML = '';
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                
+                // Create a delete button for each tag
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.textContent = 'x';
+                deleteButton.addEventListener('click', function() {
+                    tags.splice(index, 1);
+                    updateTagsDisplay();
+                });
+                tagElement.appendChild(deleteButton);
+                tagsList.appendChild(tagElement);
+            });
+        }
+
+        function prepareTags() {
+            const tagsList = document.getElementById('tags-list');
+            console.log(tagsList)
+            const tagElements = tagsList.getElementsByClassName('tag');
+            console.log(tagElements)
+            let collectedTags = [];
+            for (let tagEl of tagElements) {
+                // The firstChild should contain the tag text.
+                // Depending on your DOM structure, you might also use tagEl.childNodes[0].nodeValue
+                console.log(tagEl)
+                let tagText = tagEl.firstChild.nodeValue.trim();
+                console.log(tagText)
+                if (tagText) {
+                    collectedTags.push(tagText);
+                }
+            }
+            document.getElementById('tags-hidden').value = JSON.stringify(collectedTags);
+        }
+
+        // Attach submit event listener to the form
+        document.getElementById('new-link-form').addEventListener('submit', function(e) {
+            prepareTags();
+            // Form will now submit with the hidden field updated
+        });
+    </script>
+{% endblock %}

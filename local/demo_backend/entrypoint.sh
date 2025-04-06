@@ -71,11 +71,25 @@ CREATE TABLE IF NOT EXISTS Records (
     description TEXT,
     tags TEXT[],
     samaccountname TEXT,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-    reported TEXT[]
+    reported TEXT[] DEFAULT ARRAY[]::TEXT[]
 );
 EOF
+
+# Create the Records table in the 'knowledgemesh' database.
+psql --username=docker --dbname=knowledgemesh <<-'EOF'
+INSERT INTO public.records (title, url, description, tags, samaccountname)
+VALUES
+  ('KnowledgeMesh', 'https://github.com/jaengland/KnowledgeMesh', 'The sourcecode of KnowledgeMesh', '{code,KnowledgeMesh}', 'admin'),
+  ('Example site', 'http://example.com/example.html', 'A description of the site', '{tag1,tag2}', 'user_id'),
+  ('test site', 'http://test.com/test.html', 'A description of the site', '{tag1}', 'user_id'),
+  ('Microsoft Home site', 'http://microsoft.com', 'This is microsoft''s really cool home site. it has lots of really cool software. I just can''t stop going on about how awesome it is. You really really really need to see it right now. Go go go go go go go go. Why are you still reading this!?', '{"cool site",software}', 'demo_user'),
+  ('Google home site', 'http://google.com', 'The home site of Google', '{google}', 'demo_user'),
+  ('Kubernetes documentation', 'https://kubernetes.io/docs/home/', 'The Kubernetes documentation site', '{kubernetes}', 'demo_user');
+EOF
+
+# TODO: add insert for first record; should be name, description, tags, url for knowledge mesh user docs; probably need to pull from variable.
 
 echo "Stopping temporary PostgreSQL server..."
 su - postgres -c "/usr/lib/postgresql/12/bin/pg_ctl -D /var/lib/postgresql/12/main -m fast -w stop"

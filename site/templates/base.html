@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}KnowledgeMesh Home{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block header_scripts %}{% endblock %}
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="site-title">
+            <a href="/"><h1><b>KnowledgeMesh:</b> </h1><h3>Weaving a web of knowledge</h3></a>
+        </div>
+        {% if kerberos_authenticated %}
+        <div class="Welcome">
+          Welcome, {{ user }}
+        </div>
+        <div class="Links">
+          <a href="{{ url_for('new_link') }}">
+            <button type="button">New Link</button>
+          </a>
+          <a href="{{ url_for('manage_links') }}">
+              <button type="button">Manage Links</button>  
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      <hr width="88%" height="2px">
+    
+    <main>
+        {%block content %}
+
+        {% endblock %}
+    </main>
+    
+    </div>
+  </body>
+</html>

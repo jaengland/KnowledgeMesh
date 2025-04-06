@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}KnowledgeMesh Home{% endblock %}
+{% block header_scripts %}
+<script type="module">
+  import { selectFn, generateAndPlaceResults } from './static/js/utils.js';
+  var results = {{ results | tojson }};
+  generateAndPlaceResults(results, selectFn)
+</script>
+{% endblock %}
+{% block content %}
+      <form method="get" action="/">
+        <input type="text" name="q" placeholder="Enter search query" value="{{ search_query }}">
+        <button type="submit">Search</button>
+      </form>
+      <div class="results">
+        <h2>Most Recent Results</h2>
+        <div class="resultsContainer">
+        </div>
+      </div>
+{% endblock %}

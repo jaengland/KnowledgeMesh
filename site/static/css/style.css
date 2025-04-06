@@ -1,0 +1,226 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 90%;
+    margin: 50px auto;
+    background: #fff;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1, h2 {
+    color: #333;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  input[type="text"] {
+    padding: 10px;
+    width: 70%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input[type="url"] {
+    padding: 10px;
+    width: 70%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  textarea {
+    padding: 10px;
+    width: 70%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-left: 10px;
+    border: none;
+    background-color: #5cb85c;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #4cae4c;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    padding: 1px;
+    /* border-bottom: 1px solid #ddd; */
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;         /* Allow items to wrap when needed */
+    align-items: center;
+  }
+
+  .record {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  .record p {
+    margin: 5px 0;
+  }
+  .record button {
+    margin-right: 5px;
+  }
+  /* Tag editor styles similar to new_link.html */
+  .tag {
+    display: inline-block;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin: 2px;
+  }
+  .tag button {
+    margin-left: 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: red
+  }
+  .tag-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .tag-input-field {
+    flex: 1;
+    padding: 5px;
+    margin-left: 5px;
+  }
+  .add-tag-button {
+    font-size: 18px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .site-title {
+    padding-bottom: 3px;
+    flex: 1;
+  }
+  .site-title a {
+    color: black
+  }
+
+  .site-title h1, 
+  .site-title h3 {
+    display: inline;
+    margin: 0;
+  }
+
+  @media (max-width: 780px) {
+    .site-title h3 {
+        display: block;
+    }
+  }
+
+  .Welcome {
+    order: 1;                /* Order it to appear in the top row */
+    margin-left: auto;       /* Push it to the right */
+  }
+
+  .Links {
+    order: 2;
+    width: 100%;             /* Forces it to a new line */
+    text-align: right;       /* Aligns content to the right */
+    margin-top: 5px;         /* Optional spacing */
+  }
+  
+  .resultContainer {
+    display: flex;
+    border: 2px solid #2413bb;
+    border-radius: 10px;
+    box-shadow: 3px 3px #4e4e4e;
+    padding: 0px;
+    margin: 6px;
+    width: 100%;
+    /* max-width: 450px; */
+    box-sizing: border-box;
+  }
+  .titleURL {
+    padding: 1px;
+    width: 100%;
+  }
+
+  .result-title h4 {
+    margin: 0;
+    padding-left: 3px;
+  }
+
+  .result-url {
+    margin: 0;
+    padding-left: 3px;
+  }
+
+  .result-description p {
+    padding-top: 3px;
+    margin: 0;
+    padding-left: 3px;
+  }
+
+  .result-footer {
+    display: flex;
+  }
+
+  .result-tags {
+    justify-content: left;
+    padding-left: 3px;
+  }
+
+  .tag {
+    display: inline-block;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 5px;
+    margin: 2px;
+}
+  .tag button {
+    margin-left: 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .tag-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  #tag-input-field {
+    flex: 1;
+    padding: 5px;
+    margin-left: 5px;
+  }
+  #add-tag-button {
+    font-size: 18px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
