@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     openjdk-11-jdk \
     supervisor \
     postgresql postgresql-contrib \
-    curl
+    curl \
+    dos2unix
 
 # Create PostgreSQL data directory and set proper ownership.
 RUN mkdir -p /var/lib/postgresql/12/main && chown -R postgres:postgres /var/lib/postgresql/12/main
@@ -45,7 +46,7 @@ COPY elasticsearch.yml /etc/elasticsearch/elasticsearch.yml
 
 # Copy entrypoint script (which will initialize PostgreSQL and create the Records table).
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh && dos2unix /entrypoint.sh
 
 # Expose PostgreSQL (5432) and Elasticsearch (9200) ports.
 EXPOSE 5432 9200
