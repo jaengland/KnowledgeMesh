@@ -12,4 +12,3 @@ Best practices were sometimes sacrificed for ease of use in a local environment.
 
 ## TODO:
 - add authentication to elastic search
-- review elastic search record duplication (logstash config)

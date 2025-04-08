@@ -89,8 +89,6 @@ VALUES
   ('Kubernetes documentation', 'https://kubernetes.io/docs/home/', 'The Kubernetes documentation site', '{kubernetes}', 'demo_user');
 EOF
 
-# TODO: add insert for first record; should be name, description, tags, url for knowledge mesh user docs; probably need to pull from variable.
-
 echo "Stopping temporary PostgreSQL server..."
 su - postgres -c "/usr/lib/postgresql/12/bin/pg_ctl -D /var/lib/postgresql/12/main -m fast -w stop"
 
